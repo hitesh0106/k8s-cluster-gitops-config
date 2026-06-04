@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-cicd-api
+  namespace: k8s-cicd-app
+  labels:
+    app.kubernetes.io/name: k8s-cicd-api
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: k8s-cicd-api
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: http  # References containerPort named "http" (3000)
