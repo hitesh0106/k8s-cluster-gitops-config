@@ -1,0 +1,115 @@
+# ============================================================================
+# Prometheus Alerting Rules
+# Critical alerts for cluster and application health
+# ============================================================================
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: k8s-cicd-alerts
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: prometheus
+spec:
+  groups:
+    # ─── Pod Health Alerts ─────────────────────────────────────────────────
+    - name: pod-health
+      rules:
+        - alert: PodCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total{namespace=~"k8s-cicd-.*"}[10m]) > 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.pod }} is crash looping"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has restarted more than 5 times in the last 10 minutes."
+            runbook_url: "https://github.com/hitesh0106/k8s-cicd-project/wiki/runbooks/pod-crash-looping"
+
+        - alert: PodNotReady
+          expr: kube_pod_status_ready{namespace=~"k8s-cicd-.*", condition="true"} == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.pod }} is not ready"
+            description: "Pod {{ $labels.pod }} has been in a non-ready state for more than 5 minutes."
+
+    # ─── Resource Utilization Alerts ───────────────────────────────────────
+    - name: resource-utilization
+      rules:
+        - alert: HighCPUUsage
+          expr: |
+            (sum(rate(container_cpu_usage_seconds_total{namespace=~"k8s-cicd-.*", container!=""}[5m])) by (pod, namespace)
+            / sum(kube_pod_container_resource_limits{namespace=~"k8s-cicd-.*", resource="cpu"}) by (pod, namespace)) > 0.8
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage on pod {{ $labels.pod }}"
+            description: "Pod {{ $labels.pod }} CPU usage is above 80% for more than 5 minutes."
+
+        - alert: HighMemoryUsage
+          expr: |
+            (sum(container_memory_working_set_bytes{namespace=~"k8s-cicd-.*", container!=""}) by (pod, namespace)
+            / sum(kube_pod_container_resource_limits{namespace=~"k8s-cicd-.*", resource="memory"}) by (pod, namespace)) > 0.85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage on pod {{ $labels.pod }}"
+            description: "Pod {{ $labels.pod }} memory usage is above 85% for more than 5 minutes."
+
+    # ─── Deployment Alerts ─────────────────────────────────────────────────
+    - name: deployment-health
+      rules:
+        - alert: DeploymentReplicasMismatch
+          expr: kube_deployment_spec_replicas{namespace=~"k8s-cicd-.*"} != kube_deployment_status_replicas_available{namespace=~"k8s-cicd-.*"}
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Deployment {{ $labels.deployment }} replica mismatch"
+            description: "Deployment {{ $labels.deployment }} has not matched the expected number of replicas for 10 minutes."
+
+        - alert: DeploymentGenerationMismatch
+          expr: kube_deployment_status_observed_generation{namespace=~"k8s-cicd-.*"} != kube_deployment_metadata_generation{namespace=~"k8s-cicd-.*"}
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Deployment {{ $labels.deployment }} generation mismatch"
+            description: "Deployment {{ $labels.deployment }} has failed to progress for 15 minutes."
+
+    # ─── Node Alerts ───────────────────────────────────────────────────────
+    - name: node-health
+      rules:
+        - alert: NodeNotReady
+          expr: kube_node_status_condition{condition="Ready", status="true"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Node {{ $labels.node }} is not ready"
+            description: "Node {{ $labels.node }} has been in NotReady state for more than 5 minutes."
+
+        - alert: NodeDiskPressure
+          expr: kube_node_status_condition{condition="DiskPressure", status="true"} == 1
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Node {{ $labels.node }} has disk pressure"
+            description: "Node {{ $labels.node }} is running low on disk space."
+
+    # ─── HPA Alerts ────────────────────────────────────────────────────────
+    - name: hpa-alerts
+      rules:
+        - alert: HPAMaxedOut
+          expr: kube_horizontalpodautoscaler_status_current_replicas{namespace=~"k8s-cicd-.*"} == kube_horizontalpodautoscaler_spec_max_replicas{namespace=~"k8s-cicd-.*"}
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "HPA {{ $labels.horizontalpodautoscaler }} is maxed out"
+            description: "HPA has been running at maximum replicas for 15 minutes. Consider increasing max replicas."
