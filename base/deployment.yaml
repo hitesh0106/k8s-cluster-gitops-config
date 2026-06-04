@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-cicd-api
+  namespace: k8s-cicd-app
+  labels:
+    app.kubernetes.io/name: k8s-cicd-api
+    app.kubernetes.io/component: api
+    app.kubernetes.io/managed-by: kustomize
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: k8s-cicd-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: k8s-cicd-api
+        app.kubernetes.io/component: api
+    spec:
+      # ── Security Context (Pod Level) ──────────────────────────────────────
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+
+      # ── Anti-Affinity (spread pods across nodes) ──────────────────────────
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - k8s-cicd-api
+                topologyKey: kubernetes.io/hostname
+
+      # ── Service Account ──────────────────────────────────────────────────
+      serviceAccountName: k8s-cicd-api
+      automountServiceAccountToken: false
+
+      # ── Termination Grace Period ──────────────────────────────────────────
+      terminationGracePeriodSeconds: 30
+
+      containers:
+        - name: api
+          image: k8s-cicd-api:latest  # Overridden by kustomize
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+
+          # ── Environment Variables ────────────────────────────────────────
+          envFrom:
+            - configMapRef:
+                name: k8s-cicd-api-config
+
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+
+          # ── Resource Requests & Limits ───────────────────────────────────
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+          # ── Liveness Probe ───────────────────────────────────────────────
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          # ── Readiness Probe ──────────────────────────────────────────────
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # ── Startup Probe ────────────────────────────────────────────────
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30
+
+          # ── Security Context (Container Level) ───────────────────────────
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          # ── Volume Mounts ────────────────────────────────────────────────
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: tmp
+          emptyDir: {}
