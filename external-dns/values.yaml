@@ -1,0 +1,50 @@
+# ============================================================================
+# ExternalDNS — Helm Values
+# Automatically manages Route53 DNS records from K8s Ingress/Service resources
+# ============================================================================
+
+provider: aws
+
+aws:
+  region: ap-south-1
+  zoneType: public
+
+serviceAccount:
+  create: true
+  name: external-dns
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/k8s-cicd-external-dns-role"
+
+# Domain filter — only manage records for your domain
+domainFilters:
+  - yourdomain.com  # Replace with your actual domain
+
+# TXT record ownership
+txtOwnerId: k8s-cicd-cluster
+txtPrefix: "externaldns-"
+
+# Policy: sync = create + update + delete, upsert-only = create + update
+policy: sync
+
+# Log level
+logLevel: info
+
+# Resource limits
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+# Only process resources with this annotation
+annotationFilter: "external-dns.alpha.kubernetes.io/hostname"
+
+# Sync interval
+interval: 1m
+
+# Source of DNS records
+sources:
+  - ingress
+  - service
