@@ -25,6 +25,7 @@ env:
 permissions:
   id-token: write   # Required for OIDC
   contents: read
+  packages: write   # Required to push to GHCR
   security-events: write
 
 jobs:
