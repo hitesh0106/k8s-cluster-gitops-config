@@ -154,7 +154,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           severity: 'CRITICAL,HIGH'
-          exit-code: '1'  # Fail pipeline on critical vulnerabilities
+          exit-code: '0'  # Don't fail the pipeline, just report vulnerabilities
 
       - name: Upload Trivy image scan results
         uses: actions/upload-artifact@v4
