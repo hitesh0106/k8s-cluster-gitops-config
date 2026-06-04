@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-cicd-api-dev
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: k8s-cicd-project
+    environment: dev
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/hitesh0106/k8s-cluster-gitops-config.git
+    targetRevision: main
+    path: overlays/dev
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: k8s-cicd-dev
+
+  syncPolicy:
+    automated:
+      prune: true          # Delete resources removed from Git
+      selfHeal: true       # Auto-fix manual changes in cluster
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  revisionHistoryLimit: 10
