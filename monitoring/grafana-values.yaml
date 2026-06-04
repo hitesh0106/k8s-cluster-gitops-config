@@ -1,0 +1,89 @@
+# ============================================================================
+# Grafana — Helm Values
+# Visualization platform with pre-configured dashboards
+# ============================================================================
+
+fullnameOverride: grafana
+
+replicas: 1
+
+# ─── Admin Credentials ─────────────────────────────────────────────────────────
+adminUser: admin
+adminPassword: admin  # Change in production! Use sealed-secret instead
+
+# ─── Resources ─────────────────────────────────────────────────────────────────
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi
+
+# ─── Persistence ───────────────────────────────────────────────────────────────
+persistence:
+  enabled: true
+  storageClassName: gp3
+  size: 5Gi
+
+# ─── Data Sources ──────────────────────────────────────────────────────────────
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc.cluster.local:9090
+        access: proxy
+        isDefault: true
+        editable: false
+
+      - name: Loki
+        type: loki
+        url: http://loki.logging.svc.cluster.local:3100
+        access: proxy
+        editable: false
+
+# ─── Dashboard Providers ──────────────────────────────────────────────────────
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'custom'
+        orgId: 1
+        folder: 'K8s CI/CD'
+        type: file
+        disableDeletion: true
+        editable: false
+        options:
+          path: /var/lib/grafana/dashboards/custom
+
+# ─── Dashboard ConfigMaps ─────────────────────────────────────────────────────
+dashboardsConfigMaps:
+  custom: grafana-dashboards
+
+# ─── Grafana Service ──────────────────────────────────────────────────────────
+service:
+  type: ClusterIP
+  port: 80
+
+# ─── Grafana Ingress (optional) ───────────────────────────────────────────────
+ingress:
+  enabled: false
+  # annotations:
+  #   kubernetes.io/ingress.class: alb
+  #   alb.ingress.kubernetes.io/scheme: internet-facing
+  # hosts:
+  #   - grafana.yourdomain.com
+
+# ─── Plugins ──────────────────────────────────────────────────────────────────
+plugins:
+  - grafana-piechart-panel
+  - grafana-clock-panel
+
+# ─── SMTP (for alerting via email) ────────────────────────────────────────────
+# smtp:
+#   enabled: true
+#   host: smtp.gmail.com:587
+#   user: your-email@gmail.com
+#   password: your-app-password
