@@ -114,7 +114,7 @@ let server;
 
 const startServer = () => {
   server = app.listen(config.port, () => {
-    logger.info(`🚀 Server started`, {
+    logger.info('🚀 Server started', {
       port: config.port,
       environment: config.nodeEnv,
       pid: process.pid,
