@@ -14,13 +14,15 @@ patches:
   - path: hpa-patch.yaml
   - path: ingress-patch.yaml
 
-configMapGenerator:
-  - name: k8s-cicd-api-config
-    behavior: merge
-    literals:
-      - LOG_LEVEL=warn
-      - LOG_FORMAT=json
-      - RATE_LIMIT_MAX=50
+  - patch: |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: k8s-cicd-api-config
+      data:
+        LOG_LEVEL: "warn"
+        LOG_FORMAT: "json"
+        RATE_LIMIT_MAX: "50"
 
 images:
   - name: k8s-cicd-api

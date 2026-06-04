@@ -12,13 +12,15 @@ patches:
 - path: deployment-patch.yaml
 - path: hpa-patch.yaml
 
-configMapGenerator:
-- behavior: merge
-  literals:
-  - LOG_LEVEL=debug
-  - LOG_FORMAT=simple
-  - RATE_LIMIT_MAX=1000
-  name: k8s-cicd-api-config
+- patch: |-
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: k8s-cicd-api-config
+    data:
+      LOG_LEVEL: "debug"
+      LOG_FORMAT: "simple"
+      RATE_LIMIT_MAX: "1000"
 
 images:
 - name: k8s-cicd-api

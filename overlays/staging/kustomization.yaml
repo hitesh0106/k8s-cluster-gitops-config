@@ -12,12 +12,14 @@ patches:
 - path: deployment-patch.yaml
 - path: hpa-patch.yaml
 
-configMapGenerator:
-- behavior: merge
-  literals:
-  - LOG_LEVEL=info
-  - LOG_FORMAT=json
-  name: k8s-cicd-api-config
+- patch: |-
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: k8s-cicd-api-config
+    data:
+      LOG_LEVEL: "info"
+      LOG_FORMAT: "json"
 
 images:
 - name: k8s-cicd-api
