@@ -1,0 +1,93 @@
+# ============================================================================
+# Grafana Loki — Helm Values
+# Log aggregation system (like Prometheus, but for logs)
+# ============================================================================
+
+fullnameOverride: loki
+
+# ─── Loki Configuration ───────────────────────────────────────────────────────
+loki:
+  auth_enabled: false
+
+  storage:
+    type: filesystem
+
+  commonConfig:
+    replication_factor: 1
+
+  limits_config:
+    retention_period: 168h  # 7 days
+    max_query_series: 500
+    max_query_parallelism: 2
+
+  schema_config:
+    configs:
+      - from: "2024-01-01"
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+
+# ─── Single Binary Mode (cost-effective for small clusters) ───────────────────
+deploymentMode: SingleBinary
+
+singleBinary:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    storageClass: gp3
+    size: 10Gi
+
+# ─── Promtail (Log Collection Agent) ──────────────────────────────────────────
+# Deployed as DaemonSet on every node to collect container logs
+promtail:
+  enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  config:
+    clients:
+      - url: http://loki:3100/loki/api/v1/push
+    scrape_configs:
+      - job_name: kubernetes-pods
+        kubernetes_sd_configs:
+          - role: pod
+        pipeline_stages:
+          - docker: {}
+          - match:
+              selector: '{app="k8s-cicd-api"}'
+              stages:
+                - json:
+                    expressions:
+                      level: level
+                      message: message
+                      service: service
+                - labels:
+                    level:
+                    service:
+
+# ─── Gateway ──────────────────────────────────────────────────────────────────
+gateway:
+  enabled: false
+
+# ─── Monitoring ───────────────────────────────────────────────────────────────
+monitoring:
+  serviceMonitor:
+    enabled: true
+  selfMonitoring:
+    enabled: false
+  lokiCanary:
+    enabled: false
