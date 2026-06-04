@@ -1,0 +1,27 @@
+# ============================================================================
+# Example terraform.tfvars
+# Copy this file to terraform.tfvars and update the values
+# ============================================================================
+
+# General
+aws_region   = "ap-south-1"
+project_name = "k8s-cicd"
+environment  = "dev"
+
+# VPC
+vpc_cidr                 = "10.0.0.0/16"
+availability_zones_count = 3
+
+# EKS
+cluster_name       = "k8s-cicd-cluster"
+cluster_version    = "1.29"
+node_instance_types = ["t3.medium"]
+node_desired_size  = 2
+node_min_size      = 2
+node_max_size      = 5
+node_disk_size     = 30
+use_spot_instances = true
+
+# ECR
+ecr_repository_name       = "k8s-cicd-api"
+ecr_image_retention_count = 10

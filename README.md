@@ -1,84 +1,171 @@
-# K8s Cluster GitOps Configuration 🔄
+# K8s CI/CD GitOps Project 🚀
 
-Kubernetes manifests repository for GitOps-based deployment using ArgoCD and Kustomize.
-
-> **This is the GitOps repository.** Application source code and CI pipeline are in the [k8s-cicd-project](https://github.com/hitesh0106/k8s-cicd-project) repository.
+Production-grade Kubernetes CI/CD project with GitOps practices using ArgoCD, Terraform, and GitHub Actions.
 
 ## Architecture
 
-ArgoCD monitors this repository and automatically syncs changes to the Kubernetes cluster:
+```
+[Developer] ➔ Push Code ➔ [GitHub] ➔ Triggers ➔ [GitHub Actions CI]
+                                                      │
+                                          (Lint → Test → SonarQube → Trivy)
+                                                      │
+                                                      ▼
+                                              (Build & Push to ECR)
+                                                      │
+                                              (Update K8s Manifests)
+                                                      │
+                                                      ▼
+[AWS EKS Cluster] ◄── ArgoCD pulls & syncs ◄── [k8s-manifests repo]
+       │
+       ├── Ingress Controller (ALB)
+       ├── Cert-Manager (SSL/TLS)
+       ├── ExternalDNS (Route53)
+       ├── HPA (Auto-scaling)
+       └── Prometheus + Grafana + Loki (Observability)
+```
+
+## Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| **Application** | Node.js (Express) REST API |
+| **Containerization** | Docker (Multi-stage, Distroless) |
+| **CI Pipeline** | GitHub Actions |
+| **Infrastructure** | Terraform (AWS EKS, VPC, ECR) |
+| **GitOps CD** | ArgoCD |
+| **K8s Manifests** | Kustomize (base + overlays) |
+| **Ingress** | AWS ALB Controller |
+| **TLS** | Cert-Manager + Let's Encrypt |
+| **DNS** | ExternalDNS + Route53 |
+| **Monitoring** | Prometheus + Grafana |
+| **Logging** | Loki + Promtail |
+| **Security** | Trivy, SonarCloud, Sealed Secrets |
+
+## Project Structure
 
 ```
-[CI Pipeline] ─── Updates image tag ───► [This Repo] ◄─── ArgoCD watches
-                                              │
-                                              ▼
-                                    [EKS Cluster Deployment]
+k8s-cicd/
+├── app/                    # Node.js REST API
+│   ├── src/
+│   │   ├── index.js        # Express server with graceful shutdown
+│   │   ├── routes/         # Health checks + API routes
+│   │   ├── middleware/     # Error handler + Winston logger
+│   │   └── config/        # Centralized configuration
+│   ├── tests/             # Jest unit tests
+│   ├── Dockerfile         # Multi-stage distroless build
+│   └── package.json
+├── terraform/             # AWS Infrastructure as Code
+│   ├── vpc.tf             # VPC with public/private subnets
+│   ├── eks.tf             # EKS cluster + managed node groups
+│   ├── ecr.tf             # Container registry
+│   ├── iam.tf             # IAM roles + IRSA
+│   └── ...
+├── .github/workflows/     # CI pipeline
+│   └── ci-pipeline.yml    # Lint → Test → Scan → Build → Push → Update
+├── scripts/               # Setup automation scripts
+│   ├── setup-argocd.sh
+│   ├── setup-monitoring.sh
+│   └── setup-cert-manager.sh
+└── docker-compose.yml     # Local development
 ```
 
-## Repository Structure
+## Quick Start
 
+### 1. Local Development
+
+```bash
+# Install dependencies
+cd app && npm install
+
+# Run locally
+npm run dev
+
+# Run tests
+npm test
+
+# Lint code
+npm run lint
 ```
-k8s-cluster-gitops-config/
-├── base/                      # Base Kustomize manifests
-│   ├── namespace.yaml         # App namespace
-│   ├── deployment.yaml        # Pod spec with probes & security
-│   ├── service.yaml           # ClusterIP service
-│   ├── ingress.yaml           # ALB Ingress
-│   ├── hpa.yaml               # Horizontal Pod Autoscaler
-│   ├── configmap.yaml         # App configuration
-│   ├── sealed-secret.yaml     # Encrypted secrets
-│   └── kustomization.yaml     # Kustomize entrypoint
-├── overlays/                  # Environment-specific patches
-│   ├── dev/                   # 1 replica, debug logging
-│   ├── staging/               # 2 replicas, production-like
-│   └── production/            # 3 replicas, PDB, TLS
-├── argocd/                    # ArgoCD Application CRDs
-│   ├── application-dev.yaml
-│   ├── application-staging.yaml
-│   └── application-production.yaml
-├── ingress-controller/        # AWS LB Controller values
-├── cert-manager/              # TLS certificate management
-├── external-dns/              # Route53 DNS automation
-├── monitoring/                # Prometheus + Grafana
-│   ├── prometheus-values.yaml
-│   ├── grafana-values.yaml
-│   ├── grafana-dashboards/    # Custom JSON dashboards
-│   └── alerting-rules.yaml    # PrometheusRule alerts
-└── logging/                   # Loki log aggregation
-    └── loki-values.yaml
+
+### 2. Docker
+
+```bash
+# Build image
+docker build -t k8s-cicd-api ./app
+
+# Run with Docker Compose
+docker-compose up -d
+
+# Test
+curl http://localhost:3000/health/live
+curl http://localhost:3000/api/v1/items
 ```
+
+### 3. Terraform (AWS Infrastructure)
+
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with your values
+
+terraform init
+terraform plan
+terraform apply
+```
+
+### 4. Kubernetes Setup
+
+```bash
+# Update kubeconfig
+aws eks update-kubeconfig --region ap-south-1 --name k8s-cicd-cluster
+
+# Install ArgoCD
+./scripts/setup-argocd.sh
+
+# Install monitoring
+./scripts/setup-monitoring.sh
+
+# Install cert-manager + ExternalDNS
+./scripts/setup-cert-manager.sh
+```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Welcome message |
+| GET | `/health/live` | Liveness probe |
+| GET | `/health/ready` | Readiness probe |
+| GET | `/health/startup` | Startup probe |
+| GET | `/api/v1/info` | Application info |
+| GET | `/api/v1/items` | List items (paginated) |
+| GET | `/api/v1/items/:id` | Get single item |
+| POST | `/api/v1/items` | Create item |
+| PUT | `/api/v1/items/:id` | Update item |
+| DELETE | `/api/v1/items/:id` | Delete item |
+
+## Security Features
+
+- 🔒 **Helmet.js** — Security headers
+- 🛡️ **Rate Limiting** — DDoS protection
+- 🔑 **Non-root containers** — Distroless base image
+- 📦 **Sealed Secrets** — Encrypted secrets in Git
+- 🔍 **Trivy** — Container vulnerability scanning
+- 📊 **SonarCloud** — Static code analysis (SAST)
+- 🌐 **Private Subnets** — Worker nodes in private subnets (Zero Trust)
+- 🔐 **KMS Encryption** — EKS secrets encrypted at rest
 
 ## Environments
 
-| Environment | Path | Auto-Sync | Replicas | HPA |
-|-------------|------|-----------|----------|-----|
-| Dev | `overlays/dev` | ✅ | 1 | 1-3 |
-| Staging | `overlays/staging` | ✅ | 2 | 2-5 |
-| Production | `overlays/production` | ❌ Manual | 3 | 3-20 |
+| Environment | Replicas | HPA | Auto-Sync | Resources |
+|-------------|----------|-----|-----------|-----------|
+| **Dev** | 1 | Min:1 Max:3 | ✅ Yes | Low |
+| **Staging** | 2 | Min:2 Max:5 | ✅ Yes | Medium |
+| **Production** | 3 | Min:3 Max:20 | ❌ Manual | High |
 
-## Usage
+## License
 
-### Preview Changes
-```bash
-# Dev overlay
-kubectl kustomize overlays/dev
-
-# Production overlay
-kubectl kustomize overlays/production
-```
-
-### Apply Manually (without ArgoCD)
-```bash
-kubectl apply -k overlays/dev
-```
-
-### Update Image Tag
-```bash
-cd overlays/dev
-kustomize edit set image k8s-cicd-api=<ECR_URL>/k8s-cicd-api:v1.0.0-abc1234
-git add . && git commit -m "update: image to v1.0.0-abc1234" && git push
-# ArgoCD will auto-sync this change!
-```
+MIT
 
 ## Author
 

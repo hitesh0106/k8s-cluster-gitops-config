@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log*
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+.env
+.env.*
+coverage/
+tests/
+*.md
+.eslintrc.json
+sonar-project.properties
+.github/
