@@ -1,0 +1,33 @@
+# ============================================================================
+# Cert-Manager — Helm Values
+# Automates TLS certificate management with Let's Encrypt
+# ============================================================================
+
+installCRDs: true
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+serviceAccount:
+  create: true
+  name: cert-manager
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/k8s-cicd-cert-manager-role"
+
+# Enable Prometheus monitoring
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+
+# DNS01 solver configuration for Route53
+extraArgs:
+  - --dns01-recursive-nameservers-only
+  - --dns01-recursive-nameservers=8.8.8.8:53,1.1.1.1:53
