@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-cicd-api-production
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: k8s-cicd-project
+    environment: production
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/hitesh0106/k8s-cluster-gitops-config.git
+    targetRevision: main
+    path: overlays/production
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: k8s-cicd-production
+
+  # ── MANUAL SYNC for Production (no auto-deploy!) ──────────────────────
+  syncPolicy:
+    # automated: intentionally DISABLED for production safety
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 5m
+
+  # ── Ignore differences for fields managed by controllers ──────────────
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas  # Managed by HPA
+
+  revisionHistoryLimit: 15
