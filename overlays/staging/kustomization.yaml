@@ -6,20 +6,20 @@ namespace: k8s-cicd-staging
 namePrefix: staging-
 
 resources:
-  - ../../base
+- ../../base
 
 patches:
-  - path: deployment-patch.yaml
-  - path: hpa-patch.yaml
+- path: deployment-patch.yaml
+- path: hpa-patch.yaml
 
 configMapGenerator:
-  - name: k8s-cicd-api-config
-    behavior: merge
-    literals:
-      - LOG_LEVEL=info
-      - LOG_FORMAT=json
+- behavior: merge
+  literals:
+  - LOG_LEVEL=info
+  - LOG_FORMAT=json
+  name: k8s-cicd-api-config
 
 images:
-  - name: k8s-cicd-api
-    newName: k8s-cicd-api
-    newTag: latest
+- name: k8s-cicd-api
+  newName: ghcr.io/hitesh0106/k8s-cluster-gitops-config
+  newTag: v1.0.0-eca56eb
