@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: k8s-cicd-app
+
+commonLabels:
+  app.kubernetes.io/part-of: k8s-cicd-project
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - configmap.yaml
+  # - sealed-secret.yaml  # Uncomment when sealed-secrets controller is installed
+
+images:
+  - name: k8s-cicd-api
+    newName: k8s-cicd-api
+    newTag: latest
