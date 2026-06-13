@@ -1146,15 +1146,6 @@ We welcome contributions! Please follow the steps below to contribute to the pla
 
 ---
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- 📜 LICENSE & AUTHOR                                               -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
-## 📜 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-<br/>
 
 <div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D1B2A,50:1B263B,100:415A77&height=100&section=footer"/>
