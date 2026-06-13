@@ -33,7 +33,7 @@ jobs:
   # Job 1: Lint & Test
   # ─────────────────────────────────────────────────────────────────────────────
   lint-and-test:
-    name: 🧪 Lint & Test
+    name:  Lint & Test
     runs-on: ubuntu-latest
 
     steps:
