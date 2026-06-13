@@ -262,20 +262,6 @@ flowchart LR
     POD1 & POD2 & POD3 --- HPA["📐 Horizontal Pod<br/>Autoscaler"]:::k8s
 ```
 
----
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- 🔄 CI/CD PIPELINE DEEP DIVE                                       -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
-## 🔄 CI/CD Pipeline — Deep Dive
-
-<div align="center">
-  <img src="https://img.shields.io/badge/PIPELINE_STAGES-8-FF9800?style=for-the-badge&labelColor=0D1B2A&logo=github-actions&logoColor=white"/>
-  <img src="https://img.shields.io/badge/AVG_BUILD_TIME-~4min-4CAF50?style=for-the-badge&labelColor=0D1B2A&logo=clock&logoColor=white"/>
-  <img src="https://img.shields.io/badge/SECURITY_GATES-2-EF5350?style=for-the-badge&labelColor=0D1B2A&logo=shield&logoColor=white"/>
-</div>
-
 <br/>
 
 ### 📋 Stage-by-Stage Breakdown
@@ -625,20 +611,6 @@ curl -s https://dev.yourdomain.com/health/live | jq .
 curl -s https://staging.yourdomain.com/health/ready | jq .
 # {"status": "ready"}
 ```
-
----
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- 🛡️ ENTERPRISE SECURITY ARCHITECTURE                              -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
-## 🛡️ Enterprise Security Architecture
-
-<div align="center">
-  <img src="https://img.shields.io/badge/SECURITY_POSTURE-ZERO_TRUST-EF5350?style=for-the-badge&labelColor=0D1B2A&logo=shield&logoColor=white"/>
-  <img src="https://img.shields.io/badge/ATTACK_SURFACE_REDUCED-95%25-4CAF50?style=for-the-badge&labelColor=0D1B2A"/>
-</div>
-
 <br/>
 
 > **Security is baked into the UI/UX workflow, not bolted on as an afterthought.** Every layer of the architecture has defense-in-depth mechanisms that operate transparently.
