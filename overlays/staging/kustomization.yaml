@@ -8,10 +8,10 @@ namePrefix: staging-
 resources:
 - ../../base
 
+
 patches:
 - path: deployment-patch.yaml
 - path: hpa-patch.yaml
-
 - patch: |-
     apiVersion: v1
     kind: ConfigMap
@@ -24,4 +24,4 @@ patches:
 images:
 - name: k8s-cicd-api
   newName: ghcr.io/hitesh0106/k8s-cluster-gitops-config
-  newTag: v1.0.0-eca56eb
+  newTag: v1.0.0-daa01f2
