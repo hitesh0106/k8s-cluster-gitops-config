@@ -48,3 +48,4 @@ USER 1000
 
 # Start the application
 CMD ["src/index.js"]
+# Trigger CI pipeline for video showcase
