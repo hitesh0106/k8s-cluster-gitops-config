@@ -10,14 +10,14 @@
 
 <!-- Typing Animation -->
 <a href="https://git.io/typing-svg">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=38&duration=3000&pause=1000&color=00D4FF&center=true&vCenter=true&multiline=true&repeat=true&width=900&height=120&lines=%F0%9F%9A%80+Enterprise+K8s+CI%2FCD+%26+GitOps+Platform;%E2%98%B8%EF%B8%8F+Production-Grade+Kubernetes+Architecture" alt="Typing SVG"/>
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=32&duration=3000&pause=1000&color=00D4FF&center=true&vCenter=true&multiline=true&repeat=true&width=1000&height=120&lines=%F0%9F%9A%80+Enterprise+K8s+CI%2FCD+%26+GitOps+Platform;%E2%98%B8%EF%B8%8F+Production-Grade+Kubernetes+Architecture" alt="Typing SVG"/>
 </a>
 
 <br/>
 
 <!-- Animated Subtitle -->
 <p>
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=500&size=16&duration=4000&pause=500&color=A8DADC&center=true&vCenter=true&repeat=true&width=700&height=40&lines=Seamlessly+bridging+code+commit+%E2%86%92+live+production+with+zero-downtime+%26+unparalleled+security;Infrastructure+as+Product+%E2%80%94+Visual%2C+Frictionless%2C+Self-Healing" alt="Subtyping SVG"/>
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=500&size=16&duration=4000&pause=500&color=A8DADC&center=true&vCenter=true&repeat=true&width=900&height=40&lines=Seamlessly+bridging+code+commit+%E2%86%92+live+production+with+zero-downtime+%26+unparalleled+security;Infrastructure+as+Product+%E2%80%94+Visual%2C+Frictionless%2C+Self-Healing" alt="Subtyping SVG"/>
 </p>
 
 <!-- 🔥 Premium Badge Row -->
@@ -466,72 +466,66 @@ flowchart LR
 
 <div align="center">
 
-```
+```text
 📦 k8s-cicd-platform
- ┃
- ┣━━ 📂 app/                          🚀 Node.js REST API Source Code
- ┃   ┣━━ 📂 src/
- ┃   ┃   ┣━━ 📜 app.js                → Express app factory & middleware
- ┃   ┃   ┣━━ 📜 routes.js             → API route definitions
- ┃   ┃   ┣━━ 📜 controllers/          → Request handlers & business logic
- ┃   ┃   ┗━━ 📜 middleware/            → Auth, rate-limit, request-ID
- ┃   ┣━━ 📂 tests/
- ┃   ┃   ┣━━ 📜 unit/                 → Unit test suites (Jest)
- ┃   ┃   ┗━━ 📜 integration/          → API integration tests (Supertest)
- ┃   ┣━━ 📜 Dockerfile                → Multi-stage distroless build
- ┃   ┣━━ 📜 package.json              → Dependencies & scripts
- ┃   ┗━━ 📜 jest.config.js            → Test configuration
- ┃
- ┣━━ 📂 terraform/                    🏗️ AWS Infrastructure as Code
- ┃   ┣━━ 📂 modules/
- ┃   ┃   ┣━━ 📂 vpc/                  → VPC, subnets, NAT, IGW
- ┃   ┃   ┣━━ 📂 eks/                  → EKS cluster & managed node groups
- ┃   ┃   ┣━━ 📂 ecr/                  → Elastic Container Registry
- ┃   ┃   ┗━━ 📂 iam/                  → IAM roles & policies
- ┃   ┣━━ 📜 main.tf                   → Root module orchestration
- ┃   ┣━━ 📜 variables.tf              → Input variable definitions
- ┃   ┣━━ 📜 outputs.tf                → Exported values (cluster endpoint, etc.)
- ┃   ┣━━ 📜 terraform.tfvars.example  → Template for AWS credentials
- ┃   ┗━━ 📜 backend.tf                → S3 remote state config
- ┃
- ┣━━ 📂 k8s-manifests/                ☸️ GitOps Configurations (ArgoCD Target)
- ┃   ┣━━ 📂 base/
- ┃   ┃   ┣━━ 📜 deployment.yaml       → Base deployment spec
- ┃   ┃   ┣━━ 📜 service.yaml          → ClusterIP service
- ┃   ┃   ┣━━ 📜 hpa.yaml              → Horizontal Pod Autoscaler
- ┃   ┃   ┣━━ 📜 ingress.yaml          → ALB ingress rules
- ┃   ┃   ┗━━ 📜 kustomization.yaml    → Base resource references
- ┃   ┣━━ 📂 overlays/
- ┃   ┃   ┣━━ 📂 dev/
- ┃   ┃   ┃   ┣━━ 📜 kustomization.yaml → Dev-specific patches
- ┃   ┃   ┃   ┗━━ 📜 patches.yaml      → 1 replica, debug logging
- ┃   ┃   ┣━━ 📂 staging/
- ┃   ┃   ┃   ┣━━ 📜 kustomization.yaml → Staging-specific patches
- ┃   ┃   ┃   ┗━━ 📜 patches.yaml      → 2 replicas, pre-prod config
- ┃   ┃   ┗━━ 📂 production/
- ┃   ┃       ┣━━ 📜 kustomization.yaml → Prod-specific patches
- ┃   ┃       ┗━━ 📜 patches.yaml      → 3-20 replicas, TLS, PDBs
- ┃   ┣━━ 📂 argocd/
- ┃   ┃   ┣━━ 📜 application-dev.yaml      → Dev App CRD
- ┃   ┃   ┣━━ 📜 application-staging.yaml  → Staging App CRD
- ┃   ┃   ┗━━ 📜 application-prod.yaml     → Prod App CRD
- ┃   ┗━━ 📂 observability/
- ┃       ┣━━ 📂 prometheus/           → Prometheus CRDs & config
- ┃       ┣━━ 📂 grafana/              → Dashboard JSONs & datasources
- ┃       ┗━━ 📂 loki/                 → Loki stack & Promtail daemonset
- ┃
- ┣━━ 📂 .github/workflows/            🤖 CI Automation
- ┃   ┣━━ 📜 ci-pipeline.yaml          → Main CI workflow
- ┃   ┣━━ 📜 security-scan.yaml        → Scheduled Trivy scan
- ┃   ┗━━ 📜 terraform-plan.yaml       → IaC plan on PR
- ┃
- ┣━━ 📂 scripts/                      🔧 Bootstrap & Utility Scripts
- ┃   ┣━━ 📜 setup-argocd.sh           → ArgoCD installation & config
- ┃   ┣━━ 📜 setup-monitoring.sh       → Observability stack install
- ┃   ┗━━ 📜 destroy-all.sh            → Clean teardown script
- ┃
- ┣━━ 📜 .pre-commit-config.yaml       → Pre-commit hooks (lint, scan)
- ┗━━ 📜 README.md                     📖 You are here!
+├── 📂 app/                           🚀 Node.js REST API Source Code
+│   ├── 📂 src/
+│   │   ├── 📜 app.js                 → Express app factory & middleware
+│   │   ├── 📜 routes.js              → API route definitions
+│   │   ├── 📜 controllers/           → Request handlers & business logic
+│   │   └── 📜 middleware/            → Auth, rate-limit, request-ID
+│   ├── 📂 tests/
+│   │   ├── 📜 unit/                  → Unit test suites (Jest)
+│   │   └── 📜 integration/           → API integration tests (Supertest)
+│   ├── 📜 Dockerfile                 → Multi-stage distroless build
+│   ├── 📜 package.json               → Dependencies & scripts
+│   └── 📜 jest.config.js             → Test configuration
+├── 📂 terraform/                     🏗️ AWS Infrastructure as Code
+│   ├── 📂 modules/
+│   │   ├── 📂 vpc/                   → VPC, subnets, NAT, IGW
+│   │   ├── 📂 eks/                   → EKS cluster & managed node groups
+│   │   ├── 📂 ecr/                   → Elastic Container Registry
+│   │   └── 📂 iam/                   → IAM roles & policies
+│   ├── 📜 main.tf                    → Root module orchestration
+│   ├── 📜 variables.tf               → Input variable definitions
+│   ├── 📜 outputs.tf                 → Exported values (cluster endpoint, etc.)
+│   ├── 📜 terraform.tfvars.example   → Template for AWS credentials
+│   └── 📜 backend.tf                 → S3 remote state config
+├── 📂 k8s-manifests/                 ☸️ GitOps Configurations (ArgoCD Target)
+│   ├── 📂 base/
+│   │   ├── 📜 deployment.yaml        → Base deployment spec
+│   │   ├── 📜 service.yaml           → ClusterIP service
+│   │   ├── 📜 hpa.yaml               → Horizontal Pod Autoscaler
+│   │   ├── 📜 ingress.yaml           → ALB ingress rules
+│   │   └── 📜 kustomization.yaml     → Base resource references
+│   ├── 📂 overlays/
+│   │   ├── 📂 dev/
+│   │   │   ├── 📜 kustomization.yaml → Dev-specific patches
+│   │   │   └── 📜 patches.yaml       → 1 replica, debug logging
+│   │   ├── 📂 staging/
+│   │   │   ├── 📜 kustomization.yaml → Staging-specific patches
+│   │   │   └── 📜 patches.yaml       → 2 replicas, pre-prod config
+│   │   └── 📂 production/
+│   │       ├── 📜 kustomization.yaml → Prod-specific patches
+│   │       └── 📜 patches.yaml       → 3-20 replicas, TLS, PDBs
+│   ├── 📂 argocd/
+│   │   ├── 📜 application-dev.yaml     → Dev App CRD
+│   │   ├── 📜 application-staging.yaml → Staging App CRD
+│   │   └── 📜 application-prod.yaml    → Prod App CRD
+│   └── 📂 observability/
+│       ├── 📂 prometheus/            → Prometheus CRDs & config
+│       ├── 📂 grafana/               → Dashboard JSONs & datasources
+│       └── 📂 loki/                  → Loki stack & Promtail daemonset
+├── 📂 .github/workflows/             🤖 CI Automation
+│   ├── 📜 ci-pipeline.yaml           → Main CI workflow
+│   ├── 📜 security-scan.yaml         → Scheduled Trivy scan
+│   └── 📜 terraform-plan.yaml        → IaC plan on PR
+├── 📂 scripts/                       🔧 Bootstrap & Utility Scripts
+│   ├── 📜 setup-argocd.sh            → ArgoCD installation & config
+│   ├── 📜 setup-monitoring.sh        → Observability stack install
+│   └── 📜 destroy-all.sh             → Clean teardown script
+├── 📜 .pre-commit-config.yaml        → Pre-commit hooks (lint, scan)
+└── 📜 README.md                      📖 You are here!
 ```
 
 </div>
